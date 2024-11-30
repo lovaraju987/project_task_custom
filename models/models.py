@@ -43,6 +43,26 @@ class ProjectTask(models.Model):
         for task in tasks:
             task.is_field_service_project = task.project_id.is_field_service
 
+    
+    # Computed phone number field
+    assignee_phone = fields.Char(
+        string="Assignee Phone",
+        compute="_compute_assignee_phone",
+        store=True,
+        help="Phone number of the assigned user"
+    )
+
+    @api.depends('user_ids', 'project_id.is_field_service')
+    def _compute_assignee_phone(self):
+        """
+        Compute the phone number of the assignee if the project is a Field Service project.
+        """
+        for task in self:
+            if task.project_id.is_field_service and task.user_ids and task.user_ids.partner_id:
+                task.assignee_phone = task.user_ids.partner_id.phone
+            else:
+                task.assignee_phone = False
+
 
     slot_sdate = fields.Date(
         string="Slot SDate",
