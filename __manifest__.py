@@ -2,14 +2,14 @@
 {
     'name': "project_task_custom",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
+    'summary': "field service related project customization",
 
     'description': """
-Long description of module's purpose
+for field service project added the following features, 1) slot model, 2) assignee phone number compute feild 3) supporting technicians field
     """,
 
-    'author': "My Company",
-    'website': "https://www.yourcompany.com",
+    'author': "OneTo7 Safety Nets",
+    'website': "https://www.oneto7safetynets.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
@@ -19,7 +19,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['project'],
+    'depends': ['project', 'hr'],
 
     # always loaded
     'data': [

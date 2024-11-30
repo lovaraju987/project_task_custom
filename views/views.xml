@@ -131,7 +131,7 @@
 
 
 
-    <record id="view_task_form_inherit" model="ir.ui.view">
+    <record id="view_task_form_inherit_v2" model="ir.ui.view">
         <field name="name">project.task.form.inherit</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
@@ -143,6 +143,26 @@
             <!-- Add the phone number field next to the assignee field -->
             <xpath expr="//field[@name='user_ids']" position="after">
                 <field name="assignee_phone" readonly="1" invisible="not is_field_service_project"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_task_form_inherit_v3" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.v3</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <!-- Add the field to the view but keep it invisible -->
+            <xpath expr="//field[@name='project_id']" position="after">
+                <field name="is_field_service_project" invisible="1"/>
+            </xpath>
+            <!-- Place Supporting Technicians field after the Assignee field -->
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="supporting_technicians_ids" widget="many2many_tags" 
+                    domain="[('id', 'not in', user_ids)]" 
+                    placeholder="Select supporting technicians" 
+                    invisible="not is_field_service_project"/>
             </xpath>
         </field>
     </record>

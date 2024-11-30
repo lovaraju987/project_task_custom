@@ -18,6 +18,7 @@
 #             record.value2 = float(record.value) / 100
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'
@@ -58,10 +59,33 @@ class ProjectTask(models.Model):
         Compute the phone number of the assignee if the project is a Field Service project.
         """
         for task in self:
-            if task.project_id.is_field_service and task.user_ids and task.user_ids.partner_id:
-                task.assignee_phone = task.user_ids.partner_id.phone
+            if task.project_id.is_field_service and task.user_ids and task.user_ids:
+                # Assuming user_ids contains one primary assignee
+                primary_assignee = task.user_ids[0]
+                task.assignee_phone = primary_assignee.partner_id.phone
             else:
                 task.assignee_phone = False
+        
+         # Constraint to allow only one assignee for field service project tasks
+    @api.constrains('user_ids')
+    def _check_single_assignee_for_field_service(self):
+        for task in self:
+            if task.is_field_service_project and len(task.user_ids) > 1:
+                raise ValidationError("A field service project task can only have one assignee.")
+
+    
+    supporting_technicians_ids = fields.Many2many(
+        'res.users',
+        string="Supporting Technicians",
+        help="Select additional technicians supporting the senior technician.",
+        domain="[('id', '!=', user_ids)]",
+    )
+
+    @api.onchange('project_id')
+    def _onchange_supporting_technicians(self):
+        """ Clear supporting technicians if the project is not Field Service. """
+        if not self.is_field_service_project:
+            self.supporting_technicians_ids = [(5, 0, 0)]  # Clear the Many2many field
 
 
     slot_sdate = fields.Date(
